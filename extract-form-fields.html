@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Extract Google Form Fields</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .result { background: #f0f8f0; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .code { background: #000; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+        button { background: #4c7859; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Google Form Field Extractor</h2>
+    
+    <p>Click the button below to open your Google Form and automatically extract field IDs:</p>
+    
+    <button onclick="openFormAndExtract()">Open Form & Extract Fields</button>
+    
+    <div id="results"></div>
+    
+    <div class="result">
+        <h3>Manual Method:</h3>
+        <p>If the automatic method doesn't work:</p>
+        <ol>
+            <li>Open your Google Form</li>
+            <li>Press F12 to open Developer Tools</li>
+            <li>Go to Console tab</li>
+            <li>Paste this code and press Enter:</li>
+        </ol>
+        <div class="code">document.querySelectorAll('[name^="entry."]').forEach(el => console.log(el.name, el.placeholder || el.ariaLabel || 'Unknown field'));</div>
+    </div>
+
+    <div class="result">
+        <h3>Based on your data, here's what I found:</h3>
+        <p><strong>Name field:</strong> entry.695010385</p>
+        <p>Now we need to find the others. Try the manual method above for the remaining fields.</p>
+    </div>
+
+    <script>
+        function openFormAndExtract() {
+            // Open the form in a new window
+            const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScBIxwhQp78RWUZKXhXQjbd6023XA7IXlBYTl2E6lFWZBTwXA/viewform';
+            const formWindow = window.open(formUrl, '_blank');
+            
+            // Show instructions
+            document.getElementById('results').innerHTML = `
+                <div class="result">
+                    <h3>Form opened in new tab!</h3>
+                    <p>Now follow these steps in the new tab:</p>
+                    <ol>
+                        <li>Press F12 to open Developer Tools</li>
+                        <li>Go to the Console tab</li>
+                        <li>Paste this code and press Enter:</li>
+                    </ol>
+                    <div class="code">
+// Extract all form field names
+const fields = [];
+document.querySelectorAll('[name^="entry."]').forEach(el => {
+    const label = el.closest('[data-params]')?.querySelector('[dir="auto"]')?.textContent || 
+                  el.placeholder || 
+                  el.ariaLabel || 
+                  'Unknown';
+    fields.push({
+        name: el.name,
+        label: label.trim(),
+        type: el.type || el.tagName
+    });
+});
+
+console.log('=== FORM FIELDS ===');
+fields.forEach(field => {
+    console.log(\`\${field.label}: \${field.name}\`);
+});
+
+// Also copy to clipboard
+const fieldText = fields.map(f => \`\${f.label}: \${f.name}\`).join('\\n');
+navigator.clipboard.writeText(fieldText).then(() => {
+    console.log('Field list copied to clipboard!');
+});
+                    </div>
+                    <p><strong>This will show all field names and copy them to your clipboard!</strong></p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
