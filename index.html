@@ -664,6 +664,7 @@
                         </div>
                         
                         <button type="submit" class="cta-button" style="width: 100%;">Request Consultation</button>
+                    </form>
                     <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
                 </div>
                 
@@ -728,7 +729,7 @@
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
             
-            // After 2 seconds, show success message
+            // After form submits to iframe, show success message
             setTimeout(function() {
                 alert('Thank you for your interest! We have received your inquiry and will contact you within 24 hours to discuss your project.');
                 document.querySelector('#contactForm').reset();
